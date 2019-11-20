@@ -36,10 +36,12 @@ public class CubeTexture implements GLEventListener, KeyListener {
 
     public static DisplayMode dm, dm_old;
     private GLU glu = new GLU();
-    private float ztra, yrot, xtra;
+    private float ztra, yrot, xtra, xrot;
     private Texture stoneBrickTexture, chiseledStoneBrickTexture;
-    private final float SCALE = 1f;
-    
+    private final float SCALE = 0.3f;
+    private int timer = 0;
+    private float traslate = 0f;
+    private boolean arriba = true;
     @Override
     public void display(GLAutoDrawable drawable) {
 
@@ -54,16 +56,17 @@ public class CubeTexture implements GLEventListener, KeyListener {
         glu.gluLookAt(0.5 + xtra, 0, 5.5 + ztra,0.5+xtra, 0,2.5+ztra,0.0, 1.0, 0.0);
         gl.glLineWidth(5);
         
-        //gl.glTranslatef(0, 0, xtra);
-        //gl.glRotatef(xrot, 1.0f, 0f, 0f);
+        gl.glTranslatef(0, 0, xtra);
+        gl.glRotatef(80, 1.0f, 0f, 0f);
         //gl.glRotatef(zrot, 0, 0, 1f);
-        
+        //xrot += 0.1;
         showRules(gl);
         gl.glScaled(SCALE, SCALE, SCALE);
         
         /**
          * Creacion del laberinto
          */
+        gl.glPushMatrix();
         makeMureOfStoneBrick(gl, 10, 3, stoneBrickTexture);
         
         gl.glTranslatef(4f, -6f, -18f);
@@ -74,21 +77,27 @@ public class CubeTexture implements GLEventListener, KeyListener {
         gl.glRotatef(180, 0f, 1f, 0f);
         makeMureOfStoneBrick(gl, 3, 3, stoneBrickTexture);
         
-        gl.glTranslatef(8f, -6f, 0f);
+        gl.glTranslatef(8f, -6f, -2f);
         makeMureOfStoneBrick(gl, 5, 3, stoneBrickTexture);
         
-        gl.glTranslatef(0f, -6f, -12f);
+        gl.glTranslatef(0f, -6f, -10f);
         makeMureOfStoneBrick(gl, 2, 3, stoneBrickTexture);
         
         gl.glTranslatef(-8f, -6f, 0f);
         makeMureOfStoneBrick(gl, 2, 3, stoneBrickTexture);
         
-        gl.glTranslatef(-6f, -6f, 0f);
-        makeMureOfStoneBrick(gl, 2, 3, stoneBrickTexture);
+        if ((timer)%180==0) arriba = !arriba;
         
-        gl.glTranslatef(-4f, -6f, 6f);
+        if(arriba) traslate += 0.019f;
+        else traslate -= 0.019f;
+
+        gl.glTranslatef(-6f, -6f-traslate, 0f);
+        makeMureOfStoneBrick(gl, 2, 2, stoneBrickTexture);
+        gl.glTranslatef(0f, traslate, 0f);
+        
+        gl.glTranslatef(-4f, -4f, 6f);
         makeMureOfStoneBrick(gl, 5, 3, stoneBrickTexture);
-        
+
         gl.glTranslatef(2f, -6f, -2f);
         makeMureOfStoneBrick(gl, 1, 3, stoneBrickTexture);
         
@@ -120,9 +129,17 @@ public class CubeTexture implements GLEventListener, KeyListener {
         gl.glTranslatef(2f, -8f, 2f);
         gl.glRotatef(90, 0f, 0f, 1f);
         makeMureOfStoneBrick(gl, 12, 12, chiseledStoneBrickTexture);
+        gl.glPopMatrix();
         
-        System.out.println("yrot: " + yrot);
-        System.out.println();
+        //Puerta
+        int i = 90;
+        if(timer < 90) i = timer;
+        gl.glRotatef(270-i, 0f, 1f, 0f);
+
+        makeMureOfStoneBrick(gl, 2, 3, stoneBrickTexture);
+        
+        timer += 1;
+        System.out.println("timer: " + timer);
     }
 
     private void makeMureOfStoneBrick(GL2 gl, int length, int height, Texture stoneBrickTexture) {
